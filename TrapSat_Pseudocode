@@ -27,9 +27,9 @@ void main():
 
     //If the time since the last temperature capture is >= the time we wanted to wait,
     //capture the current temperature and set the tempTime to the current time.
-    if (currenTime - tempTime) >= tempWait:
-      captureTemps()
-      tempTime = currenTime
+    if (currentTime - tempTime) >= tempWait:
+      captureTemps(currentTime) //Saves to file the temps and current time
+      tempTime = currentTime
 
     //If the time since the last camera capture is >= the time we wanted to wait,
     //take a picture and set the camTime to the current time.
