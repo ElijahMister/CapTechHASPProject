@@ -1,42 +1,34 @@
-//TrapSat: An altimeter will be read every _ (seconds/minutes). If the altitude read is between
-//___-___ meters, the camera on board will capture an image every 5 five minutes and save the data
-//to an (USB/SD CARD).
+//TrapSat & Temp Projects: Take a picture of the aerogel every __ minutes. Capture the altitude, temperature without insolation,
+//temperature with insolation, and time into a file every ___ minutes.
+
+Note: Swap to new file for temperature project every ___ minutes could be added.
 
 void main():
-  int maxAltitude = 0 //The maximum altitude we will read from. 
-  int minAltitude = 0 //The minimum altitude we will read from.
-  int currentAltitude = 0 //The current altitude we are at.
   
-  float altTime = bootTime() //Keeps track of the time for the altitude capture. Set to the boot time at the start.
   float camTime = bootTime() //Keeps track of the time for the camera capture. Set to the boot time at the start.
   float tempTime = bootTime() //Keeps track of the time for the temperature capture. Set to the boot time at the start.
   float currentTime = prevTime //Keeps track of the current time. Helps perform calculations.
-  
-  float altimeterWait = 0 //The time we are waiting for the altimeter to be read. ( mins)
+
   float cameraWait = 0 //The time we are waiting to capture photos. (5 Mins)
   float tempWait = 0 //The time we are waiting to capture temperature. ( mins)
 
   while(1):
     currentTime = captureTime()
 
-    //If the time since the last altitude capture is >= the time we wanted to wait,
-    //capture the altitude and set the allTime to the current time.
-    if (currentTime - altTime) >= altimeterWait:
-      currentAltitude = captureAltitude()
-      altTime = currentTime
-
     //If the time since the last temperature capture is >= the time we wanted to wait,
     //capture the current temperature and set the tempTime to the current time.
     if (currentTime - tempTime) >= tempWait:
-      captureTemps(currentTime) //Saves to file the temps and current time
+      int alt = captureAltitude() // Captures current altitude
+      int tempOut = captureTemp(1) //Captures outside temp
+      int tempIn = captureTemp(2) //Captures inside temp
+      captureTemps(currentTime, alt, tempOut, tempIn) //Saves to file the time, altitude, and temperatures
       tempTime = currentTime
 
     //If the time since the last camera capture is >= the time we wanted to wait,
     //take a picture and set the camTime to the current time.
-    if currentAltitude >= minAltitude && currentAltitude <= maxAltitude:
-      if (currentTime - camTime) >= cameraWait:
-        capturePicture()
-        camTime = currentTime
+    if (currentTime - camTime) >= cameraWait:
+      capturePicture()
+      camTime = currentTime
 
     //End of while loop
   
