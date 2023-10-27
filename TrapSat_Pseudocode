@@ -1,0 +1,30 @@
+//TrapSat: An altimeter will be read every _ (seconds/minutes). If the altitude read is between
+//___-___ meters, the camera on board will capture an image every 5 five minutes and save the data
+//to an (USB/SD CARD).
+
+float captureTime():
+  
+
+void main():
+  int maxAltitude = 0 //The maximum altitude we will read from. 
+  int minAltitude = 0 //The minimum altitude we will read from.
+  int currentAltitude = 0 //The current altitude we are at.
+  
+  float altTime = bootTime() //Keeps track of the time for the altitude. Set to the boot time at the start.
+  float camTime = bootTime() //Keeps track of the time for the camera. Set to the boot time at the start.
+  float currentTime = prevTime //Keeps track of the current time. Helps perform calculations.
+  
+  float altimeterWait = 0 //The time we are waiting for the altimeter to be read. ( mins)
+  float cameraWait = 0 //The time we are waiting to capture photos. (5 Mins)
+
+  while(1):
+    currentTime = captureTime()
+    if (currentTime - altTime) >= altimeterWait:
+      currentAltitude = captureAltitude()
+      altTime = currentTime
+    if currentAltitude >= minAltitude && currentAltitude <= maxAltitude:
+      if (currentTime - camTime) >= cameraWait:
+        capturePicture()
+        camTime = currentTime
+        
+  
