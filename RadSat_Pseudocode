@@ -1,20 +1,29 @@
 // RadSat: This is an experiment to capture radiation counts from the attached gigercounter 
 // using i2c specification. It will save the data along with the time onto the sd card attached to the Raspbery Pi
+// This only pseudocode
 
 void main():
   float waitTime = 0; // Use this to set the number of seconds to wait until the next catpure of data
   int writeIndex - 0;  // Keep track of each time we write to the file so we can close the files periodicly and save data to a new file for redudancy.
   int maxWrite = 0; // Maximum number of times we want to write to a file before creating a new one
   int fileIndex = 0;
+  string dataFileName = ""; // The name of our data file
+
+  openFile(dataFileName, fileIndex); // Open our first data file
 
   while(1)
-    currentTime = captureTime()
+    currentTime = captureTime(); //Get the current time
+    
+    // Start a new file periodically so we do not lose any data
     if( writeIndex >= maxWrite):
-      closeCurrentFile();
-      openFile(fileIndex);
+      closeCurrentFile();  // Close the current data file
+      fileIndex = fileIndex + 1;  // update our file index
+      openFile(dataFileName, fileIndex); // Create a new data file using our updated fileIndex
 
   //Wait several seconds between data captures
       if(currentTime - initalTime) >= waitTime:
-          gigerCount = getGigerCounterData()            // Collect the data from the gigercounter
-          writeToFile(gigerCount, currentTime)
-          initalTime = currentTime
+          gigerCount = getGigerCounterData();            // Collect the data from the gigercounter
+          writeToFile(gigerCount, currentTime);          // Write the gigerCount as well as the time to the file
+          initalTime = currentTime;                      // Once we have written the file reset our delta-Time
+
+  //End of While Loop
