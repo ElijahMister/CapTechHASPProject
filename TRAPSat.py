@@ -75,6 +75,31 @@ class payload_data:
     
     def getFileIndexAsString(self):
         return str(self.__file_index)
+
+    def getLastFile(self):
+        #Finds the last saved file.
+        folder_path = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the Python script
+
+        # List all files in the directory
+        files = os.listdir(folder_path)
+
+        # Filter files based on the naming pattern
+        relevant_files = [file for file in files if file.startswith("TRAPSat_Data_")]
+
+        if not relevant_files:
+            print("No relevant files found.")
+            return 0
+
+        # Extract sequence numbers and find the maximum
+        sequence_numbers = [int(file.split("_")[-1]) for file in relevant_files]
+        max_sequence_number = max(sequence_numbers)
+
+        return max_sequence_number
+    
+    def setFileIndex(self, newIndex):
+        #Sets a new file index. Opens a folder that starts at that index.
+        self.__file_index = newIndex
+        self.__csv_file = open(self.__file_name+str(self.__file_index), 'w')
     
 class systems_status:
     __telemetry = 1;
@@ -367,6 +392,11 @@ def main():
     serialTelemetry(TELEMETRY_CODES.STATUS, "READY")
     t = timer(2)
     x = payload_data()
+
+    #Sets the file index if needed.
+    if(x.getLastFile() != 0):
+        x.setFileIndex(x.getLastFile() + 1)
+    
     while continue_loop == 1:
         
         if(t.update() == True):
