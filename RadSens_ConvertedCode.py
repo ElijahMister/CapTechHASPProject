@@ -44,7 +44,7 @@ def main():
     # Record the start time
     start_time = time.time()
 
-    # Main loop (you can implement your own logic here)
+    # Main loop 
     while True:
         # Calculate elapsed time
         elapsed_time = int(time.time() - start_time)
