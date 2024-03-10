@@ -5,6 +5,20 @@ class rockblock:
     
     def __init__(self, port:str):
         self.__ser = serial.Serial(port, 19200, timeout=1)
+
+    def getLSB(self, binary:bin, nBits:int = 4): #returns a string of the lsb's for nBits   
+        length = len(binary)
+        lastBit = length - 1
+        return_string = ""
+        loop_Bits = nBits
+        if(length-2 < nBits):
+            loop_Bits = length-2
+        for i in range(0,loop_Bits):
+            return_string =  binary[lastBit-i]+return_string
+        if(len(return_string) < nBits):
+            while len(return_string) < nBits:
+                return_string = "0" + return_string
+        return return_string
         
     def closeSerialConnection(self): #just closes the serial connection, it does not clear the MO buffer
         self.__ser.close()
@@ -135,25 +149,22 @@ class rockblock:
         x = message_length.to_bytes(2, 'big')
         y = self.checkSum(message)
         return x + message.encode() + y
-    
-    def checkSum(self, string:str): #a checksum
-        #THis checksum takes the last characture and the middle characture, rounded down and subtracts them
-        #It then takes the first and second characture and finds the diffrence, rounded down
-        #Use this for now but I found a better way to do it by adding all the charactures and finding the lsb
-        #I just have to figure out how to do it.
-        length = len(string)
-        if length >= 2:
-            midpoint = int(length/2)
-            x = ord(string[len(string)-1])
-            y = ord(string[len(string)-midpoint])
-            a = ord(string[0])
-            b = ord(string[1])
-            z = abs(x-y)
-            c = abs(a-b)
-        else:
-            z = ord(string[0])
-            c = ord(string[0])
-        return z.to_bytes(1, 'big') + c.to_bytes(1, 'big')
+
+    def checkSum(self, string:str): #uses alternitive check sum
+        sumation = 0
+        #for each charactur in string add its ascii value together
+        for c in string:
+            sumation = sumation+ord(c)
+        #take that value and convert it to binary
+        s = bin(sumation)
+        #find the 8 least significant bits
+        x = self.getLSB(s,8)
+        s = s.removesuffix(x)
+        y = self.getLSB(s,8)
+        x = int(x,2)
+        y = int(y,2)
+        print(chr(x)+chr(y))
+        return(chr(x)+chr(y))
     
     def decode_textMessage(self, message:str):
         #Dose the oppisie of encode and validates the data sent
