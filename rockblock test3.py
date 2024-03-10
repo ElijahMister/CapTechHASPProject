@@ -6,31 +6,35 @@ class rockblock:
     def __init__(self, port:str):
         self.__ser = serial.Serial(port, 19200, timeout=1)
         
-    def closeSerialConnection(self):
+    def closeSerialConnection(self): #just closes the serial connection, it does not clear the MO buffer
         self.__ser.close()
         
-    def stopRF(self):
+    def stopRF(self): #stops the RF signal *Untested*
         self.__ser.write("AT*Rn 0\r")
         self.wait_until_response()
         
-    def startRF(self):
+    def startRF(self): #starts the RF signal *Untested*
         self.__ser.write("AT*Rn 1\r")
         self.wait_until_response()
         
-    def getGPSPosition(self):
+    def getGPSPosition(self): #some rockblocks have gps functionality these functions are just in case we have one of those *Untested*
         self.__ser.write("+GPSPOS\r")
         self.wait_until_response()
     
-    def enableGPS(self):
+    def enableGPS(self): #some rockblocks have gps functionality these functions are just in case we have one of those *Untested*
         self.__ser.write("+GPSSTA 1\r")
         self.wait_until_response()
-    def wait_until_response(self):
+        
+    def wait_until_response(self): #keeps reading the input buffer until it gets a signal 
         x = 1
         while x == 1:
             y = ''
             y = self.__ser.readline()
             #print(str(y))
             if y.startswith("+SBDIX:") == True:
+                x = 0
+                return str(y)
+            if y.startswith("+SBDS:") == True:
                 x = 0
                 return str(y)
             if y == "OK\r\n" or y == "ERROR\r\n":
