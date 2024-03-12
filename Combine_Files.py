@@ -37,12 +37,13 @@ def process_data_files():
                 except Exception as e:
                     print(f"Error reading {file_path}: {e}")
 
-    # Create a new combined file
-    combined_file_path = os.path.join(current_directory, "combined_data.txt")
+    # Create a new combined CSV file
+    combined_file_path = os.path.join(current_directory, "combined_data.csv")
 
-    # Write combined data to the new file
+    # Write combined data to the new CSV file
     with open(combined_file_path, 'w', newline='') as combined_file:
-        combined_file.writelines(combined_data)
+        csv_writer = csv.writer(combined_file)
+        csv_writer.writerows(csv.reader(combined_data))
 
     # Calculate the percentage of corrupted files
     percentage_corrupted = (len(corrupted_files) / max(1, total_files)) * 100
